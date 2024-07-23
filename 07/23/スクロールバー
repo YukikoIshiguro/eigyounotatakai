@@ -1,0 +1,197 @@
+import pandas as pd
+
+# ファイルパス
+file_path = r"C:\Users\yukik\Desktop\kirikaesi.xlsx"
+
+# Excelファイルを読み込む
+df = pd.read_excel(file_path)
+
+# HTMLのヘッダー部分
+html_header = '''
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クイズ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #FFFDD0; /* クリーム色 */
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* スクロールバーの表示をbody全体に制限 */
+        }
+        .header, .footer {
+            background-color: orange; /* オレンジ色 */
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto; /* 縦スクロールバーを追加 */
+            box-sizing: border-box;
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .response {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: green;
+            display: none;
+        }
+        .message {
+            color: blue;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .answer-buttons {
+            margin-top: 10px;
+        }
+        .answer-buttons button {
+            margin-right: 10px;
+        }
+        .score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: darkblue;
+        }
+        .controls {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #FFFDD0;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .header, .footer {
+                font-size: 20px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">one-hat株式会社 営業切り返し覚えたかわかーるツール</div>
+    <div class="controls">
+        <button onclick="shuffleQuestions()">シャッフルモード</button>
+        <button onclick="clearPage()">クリア</button>
+    </div>
+    <div class="content">
+'''
+
+# HTMLのフッター部分
+html_footer = '''
+    </div>
+    <div class="footer">© 2024 one-hat株式会社</div>
+</body>
+</html>
+'''
+
+# HTMLの本文部分を生成する関数
+def generate_html_body(df):
+    html_body = ''
+    for index, row in df.iterrows():
+        # お電話口のセリフ（B列）
+        phone_script = "第{}問: お電話口セリフ(*'ω'*) - {}".format(index + 1, row['お電話口のセリフ'])
+        
+        # 切り返しのセリフ（C列）
+        response_script = "切り返しのセリフ - {}".format(row['切り返し'])
+        
+        # HTMLに追加
+        html_body += f'''
+        <div class="question">
+            <p>{phone_script}</p>
+            <button onclick="showResponse('response{index}')">答えを見る</button>
+            <div id="response{index}" class="response">
+                <p>{response_script}</p>
+                <div class="answer-buttons">
+                    <button id="correct{index}" onclick="markCorrect('response{index}', {index})">正解</button>
+                    <button id="incorrect{index}" onclick="markIncorrect('response{index}', {index})">不正解</button>
+                </div>
+            </div>
+        </div>
+        '''
+    return html_body
+
+# 最初のHTMLボディ生成
+html_body = generate_html_body(df)
+
+# JavaScriptでボタンをクリックすると回答を表示し、正解・不正解をカウントする関数を追加
+html_script = '''
+<script>
+let correctCount = 0;
+let incorrectCount = 0;
+const totalQuestions = ''' + str(len(df)) + ''';
+
+function showResponse(id) {
+    document.getElementById(id).style.display = 'block';
+}
+
+function markCorrect(id, index) {
+    correctCount++;
+    document.getElementById(id).style.color = 'blue';
+    document.getElementById('correct' + index).disabled = true;
+    document.getElementById('incorrect' + index).disabled = true;
+    alert('正解です！');
+    updateScore();
+}
+
+function markIncorrect(id, index) {
+    incorrectCount++;
+    document.getElementById(id).style.color = 'red';
+    document.getElementById('correct' + index).disabled = true;
+    document.getElementById('incorrect' + index).disabled = true;
+    alert('不正解です！');
+    updateScore();
+}
+
+function updateScore() {
+    const totalScore = correctCount;
+    document.getElementById('score').innerText = `得点: ${totalScore}点`;
+
+    const correctPercentage = (correctCount / totalQuestions) * 100;
+    if (correctCount + incorrectCount === totalQuestions) {
+        if (correctPercentage === 100) {
+            alert('天才！(#^^#)');
+        } else if (correctPercentage > 50) {
+            alert('頑張ろうー！あともうちょっとで完璧だ～(*^-^*)');
+        } else if (correctPercentage < 49) {
+            alert('惜しい、もう一回頑張ろうー　無理せずファイトです♪');
+        }
+    }
+}
+
+function shuffleQuestions() {
+    const questions = document.querySelectorAll('.question');
+    const container = document.querySelector('.content');
+    const scoreElement = document.getElementById('score');
+    const shuffled = Array.from(questions).sort(() => Math.random() - 0.5);
+    shuffled.forEach(question => container.insertBefore(question, scoreElement));
+}
+
+function clearPage() {
+    location.reload();
+}
+</script>
+'''
+
+# 完全なHTML
+html_content = html_header + html_body + '<div id="score" class="score">得点: 0点</div>' + html_script + html_footer
+
+# HTMLファイルを書き込む
+with open('quiz.html', 'w', encoding='utf-8') as file:
+    file.write(html_content)
+
+print("HTMLファイルに出力しました。")
