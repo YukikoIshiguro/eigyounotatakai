@@ -1,0 +1,29 @@
+import pandas as pd
+
+# ファイルパス
+file_path = r"C:\Users\yukik\Desktop\kirikaesi.xlsx"
+
+# Excelファイルを読み込む
+df = pd.read_excel(file_path)
+
+# クイズ番組風に一行ずつ表示する
+for index, row in df.iterrows():
+    # お電話口のセリフを表示（B列）
+    phone_script = "第{}問: お電話口のセリフ - {}".format(index + 1, row['お電話口のセリフ'])
+    print(phone_script)
+    
+    # 案内メッセージを表示
+    print("\nお電話口の方に案内（戦う）セリフを考えよう！\n")
+    
+    # ユーザーが次のセリフに進むための入力待ち
+    input("答えを見るにはEnterキーを押してください...")
+    
+    # 切り返しのセリフを表示（C列）
+    response_script = "切り返しのセリフ - {}".format(row['切り返し'])
+    print(response_script)
+    print("\n次の問題に進むにはEnterキーを押してください...\n")
+    
+    # 次の問題に進むための入力待ち
+    input()
+
+print("クイズ終了！")
