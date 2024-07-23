@@ -1,4 +1,14 @@
+import tkinter as tk
+import pandas as pd
 
+# ファイルパス
+file_path = r"C:\Users\yukik\Desktop\kirikaesi.xlsx"
+
+# Excelファイルを読み込む
+df = pd.read_excel(file_path)
+
+# HTMLのヘッダー部分
+html_header = '''
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -119,143 +129,51 @@
         <button onclick="clearPage()">クリア</button>
     </div>
     <div class="content">
+'''
 
-        <div class="question">
-            <p>第1問: お電話口のセリフ - 今忙しい！</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response0')">答えを見る</button>
-            <div id="response0" class="response">
-                <p>切り返しのセリフ - ５分位でおわります＾＾</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct0" onclick="markCorrect('response0', 0)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect0" onclick="markIncorrect('response0', 0)">不正解</button>
-                </div>
-            </div>
-        </div>
+# HTMLのフッター部分
+html_footer = '''
+    </div>
+    <div class="footer">© 2024 one-hat株式会社</div>
+</body>
+</html>
+'''
+
+# HTMLの本文部分を生成する関数
+def generate_html_body(df):
+    html_body = ''
+    for index, row in df.iterrows():
+        # お電話口のセリフ（B列）
+        phone_script = "第{}問: お電話口のセリフ - {}".format(index + 1, row['お電話口のセリフ'])
         
-        <div class="question">
-            <p>第2問: お電話口のセリフ - 詐欺なんじゃないの</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response1')">答えを見る</button>
-            <div id="response1" class="response">
-                <p>切り返しのセリフ - 違いますー</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct1" onclick="markCorrect('response1', 1)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect1" onclick="markIncorrect('response1', 1)">不正解</button>
-                </div>
-            </div>
-        </div>
+        # 切り返しのセリフ（C列）
+        response_script = "切り返しのセリフ - {}".format(row['切り返し'])
         
+        # HTMLに追加
+        html_body += f'''
         <div class="question">
-            <p>第3問: お電話口のセリフ - 何で今電話してくるの？</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response2')">答えを見る</button>
-            <div id="response2" class="response">
-                <p>切り返しのセリフ - ようやく精査が終わったタイミングだったので。</p>
+            <p>{phone_script}</p>
+            <button class="btn--red btn--cubic" onclick="showResponse('response{index}')">答えを見る</button>
+            <div id="response{index}" class="response">
+                <p>{response_script}</p>
                 <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct2" onclick="markCorrect('response2', 2)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect2" onclick="markIncorrect('response2', 2)">不正解</button>
+                    <button class="correct-button btn--cubic" id="correct{index}" onclick="markCorrect('response{index}', {index})">正解</button>
+                    <button class="incorrect-button btn--cubic" id="incorrect{index}" onclick="markIncorrect('response{index}', {index})">不正解</button>
                 </div>
             </div>
         </div>
-        
-        <div class="question">
-            <p>第4問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response3')">答えを見る</button>
-            <div id="response3" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct3" onclick="markCorrect('response3', 3)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect3" onclick="markIncorrect('response3', 3)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第5問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response4')">答えを見る</button>
-            <div id="response4" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct4" onclick="markCorrect('response4', 4)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect4" onclick="markIncorrect('response4', 4)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第6問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response5')">答えを見る</button>
-            <div id="response5" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct5" onclick="markCorrect('response5', 5)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect5" onclick="markIncorrect('response5', 5)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第7問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response6')">答えを見る</button>
-            <div id="response6" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct6" onclick="markCorrect('response6', 6)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect6" onclick="markIncorrect('response6', 6)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第8問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response7')">答えを見る</button>
-            <div id="response7" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct7" onclick="markCorrect('response7', 7)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect7" onclick="markIncorrect('response7', 7)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第9問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response8')">答えを見る</button>
-            <div id="response8" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct8" onclick="markCorrect('response8', 8)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect8" onclick="markIncorrect('response8', 8)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第10問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response9')">答えを見る</button>
-            <div id="response9" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct9" onclick="markCorrect('response9', 9)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect9" onclick="markIncorrect('response9', 9)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第11問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response10')">答えを見る</button>
-            <div id="response10" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct10" onclick="markCorrect('response10', 10)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect10" onclick="markIncorrect('response10', 10)">不正解</button>
-                </div>
-            </div>
-        </div>
-        <div id="score" class="score">得点: 0点</div>
+        '''
+    return html_body
+
+# 最初のHTMLボディ生成
+html_body = generate_html_body(df)
+
+# JavaScriptでボタンをクリックすると回答を表示し、正解・不正解をカウントする関数を追加
+html_script = '''
 <script>
 let correctCount = 0;
 let incorrectCount = 0;
-const totalQuestions = 11;
+const totalQuestions = ''' + str(len(df)) + ''';
 
 function showResponse(id) {
     document.getElementById(id).style.display = 'block';
@@ -319,8 +237,13 @@ function clearPage() {
     location.reload();
 }
 </script>
+'''
 
-    </div>
-    <div class="footer">© 2024 one-hat株式会社</div>
-</body>
-</html>
+# 完全なHTML
+html_content = html_header + html_body + '<div id="score" class="score">得点: 0点</div>' + html_script + html_footer
+
+# HTMLファイルを書き込む
+with open('quiz.html', 'w', encoding='utf-8') as file:
+    file.write(html_content)
+
+print("HTMLファイルに出力しました。")
