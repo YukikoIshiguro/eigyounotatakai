@@ -1,0 +1,141 @@
+import pandas as pd
+
+# ファイルパス
+file_path = r"C:\Users\yukik\Desktop\kirikaesi.xlsx"
+
+# Excelファイルを読み込む
+df = pd.read_excel(file_path)
+
+# HTMLのヘッダー部分
+html_header = '''
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クイズ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #FFFDD0; /* クリーム色 */
+        }
+        .header, .footer {
+            background-color: orange; /* オレンジ色 */
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            position: relative;
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .response {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: green;
+            display: none;
+        }
+        .message {
+            color: blue;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .answer-buttons {
+            margin-top: 10px;
+        }
+        .answer-buttons button {
+            margin-right: 10px;
+        }
+        .score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: darkblue;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">one-hat株式会社 営業切り返し覚えたかわかーるツール</div>
+'''
+
+# HTMLのフッター部分
+html_footer = '''
+    <div class="footer">© 2024 one-hat株式会社</div>
+</body>
+</html>
+'''
+
+# HTMLの本文部分
+html_body = ''
+
+# クイズ番組風に一行ずつHTMLに変換
+for index, row in df.iterrows():
+    # お電話口のセリフ（B列）
+    phone_script = "第{}問: お電話口のセリフ - {}".format(index + 1, row['お電話口のセリフ'])
+    
+    # 切り返しのセリフ（C列）
+    response_script = "切り返しのセリフ - {}".format(row['切り返し'])
+    
+    # HTMLに追加
+    html_body += f'''
+    <div class="question">
+        <p>{phone_script}</p>
+        <button onclick="showResponse('response{index}')">答えを見る</button>
+        <div id="response{index}" class="response">
+            <p>{response_script}</p>
+            <div class="answer-buttons">
+                <button id="correct{index}" onclick="markCorrect('response{index}', {index})">正解</button>
+                <button id="incorrect{index}" onclick="markIncorrect('response{index}', {index})">不正解</button>
+            </div>
+        </div>
+    </div>
+    '''
+
+# JavaScriptでボタンをクリックすると回答を表示し、正解・不正解をカウントする関数を追加
+html_script = '''
+<script>
+let correctCount = 0;
+let incorrectCount = 0;
+
+function showResponse(id) {
+    document.getElementById(id).style.display = 'block';
+}
+
+function markCorrect(id, index) {
+    correctCount++;
+    document.getElementById(id).style.color = 'blue';
+    document.getElementById('correct' + index).disabled = true;
+    document.getElementById('incorrect' + index).disabled = true;
+    alert('正解です！');
+    updateScore();
+}
+
+function markIncorrect(id, index) {
+    incorrectCount++;
+    document.getElementById(id).style.color = 'red';
+    document.getElementById('correct' + index).disabled = true;
+    document.getElementById('incorrect' + index).disabled = true;
+    alert('不正解です！');
+    updateScore();
+}
+
+function updateScore() {
+    const totalScore = correctCount;
+    document.getElementById('score').innerText = `得点: ${totalScore}点`;
+}
+</script>
+'''
+
+# 完全なHTML
+html_content = html_header + html_body + '<div id="score" class="score">得点: 0点</div>' + html_script + html_footer
+
+# HTMLファイルを書き込む
+with open('quiz.html', 'w', encoding='utf-8') as file:
+    file.write(html_content)
+
+print("HTMLファイルに出力しました。")
