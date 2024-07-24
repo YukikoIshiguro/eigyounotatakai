@@ -266,6 +266,7 @@ function markCorrect(id, index) {
     document.getElementById(id).style.color = 'blue';
     document.getElementById('correct' + index).disabled = true;
     document.getElementById('incorrect' + index).disabled = true;
+    document.getElementById('correctSound').play();
     alert('正解です！');
     updateScore();
 }
@@ -275,6 +276,7 @@ function markIncorrect(id, index) {
     document.getElementById(id).style.color = 'red';
     document.getElementById('correct' + index).disabled = true;
     document.getElementById('incorrect' + index).disabled = true;
+    document.getElementById('incorrectSound').play();
     alert('不正解です！');
     updateScore();
 }
@@ -310,5 +312,7 @@ function clearPage() {
 
     </div>
     <div class="footer">© 2024 one-hat株式会社</div>
+    <audio id="correctSound" src="C:\Users\yukik\Desktop\python\correct077.mp3"></audio>
+    <audio id="incorrectSound" src="C:\Users\yukik\Desktop\python\クイズ不正解1.mp3"></audio>
 </body>
 </html>
