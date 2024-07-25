@@ -1,318 +1,223 @@
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>クイズ</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #FFFDD0; /* クリーム色 */
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden; /* スクロールバーの表示をbody全体に制限 */
-        }
-        .header, .footer {
-            background-color: orange; /* オレンジ色 */
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto; /* 縦スクロールバーを追加 */
-            box-sizing: border-box;
-        }
-        .question {
-            margin-bottom: 30px;
-        }
-        .response {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            color: green;
-            display: none;
-        }
-        .message {
-            color: blue;
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            border: none;
-            background-color: #d9534f; /* ボタンの背景色 */
-            color: white; /* ボタンのテキスト色 */
-            font-size: 16px;
-            border-radius: 100vh; /* 角を丸く */
-            position: relative;
-        }
-        button:hover {
-            margin-top: 3px;
-            border-bottom: 2px solid #9f000c;
-        }
-        .btn--red {
-            border-bottom: 5px solid #9f000c;
-        }
-        .answer-buttons {
-            margin-top: 10px;
-        }
-        .answer-buttons button {
-            margin-right: 10px;
-            padding: 8px 16px; /* 小さくする */
-            font-size: 14px;  /* フォントサイズを小さくする */
-            border-radius: 4px; /* 四角にする */
-            border: none; /* ボーダーなし */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 影を追加 */
-        }
-        .correct-button {
-            background-color: #FFC0CB; /* 薄いピンク */
-            color: black;
-        }
-        .incorrect-button {
-            background-color: #ADD8E6; /* 薄い青 */
-            color: black;
-        }
-        .score {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 20px;
-            color: darkblue;
-        }
-        .controls {
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #FFFDD0;
-            text-align: center;
-        }
-        .controls button {
-            padding: 8px 16px; /* サイズを調整 */
-            font-size: 14px;  /* フォントサイズを調整 */
-            background-color: white; /* 白色の背景 */
-            color: black; /* 黒い文字 */
-            border-radius: 4px; /* 四角にする */
-            border: 1px solid #ccc; /* 枠線を追加 */
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* 影を追加 */
-        }
-        .controls button:hover {
-            background-color: #f0f0f0; /* ホバー時の色 */
-        }
-        @media (max-width: 600px) {
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>クイズ</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #FFFDD0;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
             .header, .footer {
+                background-color: orange;
+                padding: 10px;
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                color: white;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .content {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+                box-sizing: border-box;
+            }
+            .question {
+                margin-bottom: 30px;
+            }
+            .response {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                color: green;
+                display: none;
+            }
+            .message {
+                color: blue;
+            }
+            button {
+                margin-top: 10px;
+                padding: 10px 20px;
+                border: none;
+                background-color: #d9534f;
+                color: white;
+                font-size: 16px;
+                border-radius: 100vh;
+                position: relative;
+            }
+            button:hover {
+                margin-top: 3px;
+                border-bottom: 2px solid #9f000c;
+            }
+            .btn--red {
+                border-bottom: 5px solid #9f000c;
+            }
+            .answer-buttons {
+                margin-top: 10px;
+            }
+            .answer-buttons button {
+                margin-right: 10px;
+                padding: 8px 16px;
+                font-size: 14px;
+                border-radius: 4px;
+                border: none;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .correct-button {
+                background-color: #FFC0CB;
+                color: black;
+            }
+            .incorrect-button {
+                background-color: #ADD8E6;
+                color: black;
+            }
+            .score {
                 font-size: 20px;
-                padding: 8px;
+                font-weight: bold;
+                margin-top: 20px;
+                color: darkblue;
+            }
+            .controls {
+                margin-bottom: 20px;
+                padding: 10px;
+                background-color: #FFFDD0;
+                text-align: center;
+            }
+            .controls button {
+                padding: 8px 16px;
+                font-size: 14px;
+                background-color: white;
+                color: black;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+                box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            }
+            .controls button:hover {
+                background-color: #f0f0f0;
+            }
+            @media (max-width: 600px) {
+                .header, .footer {
+                    font-size: 20px;
+                    padding: 8px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">one-hat株式会社 営業切り返し覚えたかわかーるツール</div>
+        <div class="controls">
+            <button onclick="shuffleQuestions()">シャッフルモード</button>
+            <button onclick="clearPage()">クリア</button>
+        </div>
+        <div class="content">
+    
+            <div class="question">
+                <p>第1問: お電話口のセリフ - あああ</p>
+                <button class="btn--red btn--cubic" onclick="showResponse('response0')">答えを見る</button>
+                <div id="response0" class="response">
+                    <p>切り返しのセリフ - いいい</p>
+                    <div class="answer-buttons">
+                        <button class="correct-button btn--cubic" id="correct0" onclick="markCorrect('response0', 0)">正解</button>
+                        <button class="incorrect-button btn--cubic" id="incorrect0" onclick="markIncorrect('response0', 0)">不正解</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>第2問: お電話口のセリフ - ううう</p>
+                <button class="btn--red btn--cubic" onclick="showResponse('response1')">答えを見る</button>
+                <div id="response1" class="response">
+                    <p>切り返しのセリフ - えええ</p>
+                    <div class="answer-buttons">
+                        <button class="correct-button btn--cubic" id="correct1" onclick="markCorrect('response1', 1)">正解</button>
+                        <button class="incorrect-button btn--cubic" id="incorrect1" onclick="markIncorrect('response1', 1)">不正解</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>第3問: お電話口のセリフ - おおお</p>
+                <button class="btn--red btn--cubic" onclick="showResponse('response2')">答えを見る</button>
+                <div id="response2" class="response">
+                    <p>切り返しのセリフ - かかか</p>
+                    <div class="answer-buttons">
+                        <button class="correct-button btn--cubic" id="correct2" onclick="markCorrect('response2', 2)">正解</button>
+                        <button class="incorrect-button btn--cubic" id="incorrect2" onclick="markIncorrect('response2', 2)">不正解</button>
+                    </div>
+                </div>
+            </div>
+            <div id="score" class="score">得点: 0点</div>
+    <script>
+    let correctCount = 0;
+    let incorrectCount = 0;
+    const totalQuestions = 3;
+
+    function showResponse(id) {
+        document.getElementById(id).style.display = 'block';
+    }
+
+    function markCorrect(id, index) {
+        correctCount++;
+        document.getElementById(id).style.color = 'blue';
+        document.getElementById('correct' + index).disabled = true;
+        document.getElementById('incorrect' + index).disabled = true;
+        document.getElementById('correctSound').play();
+        alert('正解です！');
+        updateScore();
+    }
+
+    function markIncorrect(id, index) {
+        incorrectCount++;
+        document.getElementById(id).style.color = 'red';
+        document.getElementById('correct' + index).disabled = true;
+        document.getElementById('incorrect' + index).disabled = true;
+        document.getElementById('incorrectSound').play();
+        alert('不正解です！');
+        updateScore();
+    }
+
+    function updateScore() {
+        const totalScore = correctCount;
+        document.getElementById('score').innerText = `得点: ${totalScore}点`;
+
+        const correctPercentage = (correctCount / totalQuestions) * 100;
+        if (correctCount + incorrectCount === totalQuestions) {
+            if (correctPercentage === 100) {
+                alert('天才！(#^^#)');
+            } else if (correctPercentage > 50) {
+                alert('頑張ろうー！あともうちょっとで完璧だ～(*^-^*)');
+            } else if (correctPercentage < 49) {
+                alert('惜しい、もう一回頑張ろうー　無理せずファイトです♪');
             }
         }
-    </style>
-</head>
-<body>
-    <div class="header">one-hat株式会社 営業切り返し覚えたかわかーるツール</div>
-    <div class="controls">
-        <button onclick="shuffleQuestions()">シャッフルモード</button>
-        <button onclick="clearPage()">クリア</button>
-    </div>
-    <div class="content">
-
-        <div class="question">
-            <p>第1問: お電話口のセリフ - 今忙しい！</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response0')">答えを見る</button>
-            <div id="response0" class="response">
-                <p>切り返しのセリフ - ５分位でおわります＾＾</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct0" onclick="markCorrect('response0', 0)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect0" onclick="markIncorrect('response0', 0)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第2問: お電話口のセリフ - 詐欺なんじゃないの</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response1')">答えを見る</button>
-            <div id="response1" class="response">
-                <p>切り返しのセリフ - 違いますー</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct1" onclick="markCorrect('response1', 1)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect1" onclick="markIncorrect('response1', 1)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第3問: お電話口のセリフ - 何で今電話してくるの？</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response2')">答えを見る</button>
-            <div id="response2" class="response">
-                <p>切り返しのセリフ - ようやく精査が終わったタイミングだったので。</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct2" onclick="markCorrect('response2', 2)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect2" onclick="markIncorrect('response2', 2)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第4問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response3')">答えを見る</button>
-            <div id="response3" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct3" onclick="markCorrect('response3', 3)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect3" onclick="markIncorrect('response3', 3)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第5問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response4')">答えを見る</button>
-            <div id="response4" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct4" onclick="markCorrect('response4', 4)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect4" onclick="markIncorrect('response4', 4)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第6問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response5')">答えを見る</button>
-            <div id="response5" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct5" onclick="markCorrect('response5', 5)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect5" onclick="markIncorrect('response5', 5)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第7問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response6')">答えを見る</button>
-            <div id="response6" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct6" onclick="markCorrect('response6', 6)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect6" onclick="markIncorrect('response6', 6)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第8問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response7')">答えを見る</button>
-            <div id="response7" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct7" onclick="markCorrect('response7', 7)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect7" onclick="markIncorrect('response7', 7)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第9問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response8')">答えを見る</button>
-            <div id="response8" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct8" onclick="markCorrect('response8', 8)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect8" onclick="markIncorrect('response8', 8)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第10問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response9')">答えを見る</button>
-            <div id="response9" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct9" onclick="markCorrect('response9', 9)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect9" onclick="markIncorrect('response9', 9)">不正解</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="question">
-            <p>第11問: お電話口のセリフ - xxx</p>
-            <button class="btn--red btn--cubic" onclick="showResponse('response10')">答えを見る</button>
-            <div id="response10" class="response">
-                <p>切り返しのセリフ - ~~~</p>
-                <div class="answer-buttons">
-                    <button class="correct-button btn--cubic" id="correct10" onclick="markCorrect('response10', 10)">正解</button>
-                    <button class="incorrect-button btn--cubic" id="incorrect10" onclick="markIncorrect('response10', 10)">不正解</button>
-                </div>
-            </div>
-        </div>
-        <div id="score" class="score">得点: 0点</div>
-<script>
-let correctCount = 0;
-let incorrectCount = 0;
-const totalQuestions = 11;
-
-function showResponse(id) {
-    document.getElementById(id).style.display = 'block';
-}
-
-function markCorrect(id, index) {
-    correctCount++;
-    document.getElementById(id).style.color = 'blue';
-    document.getElementById('correct' + index).disabled = true;
-    document.getElementById('incorrect' + index).disabled = true;
-    document.getElementById('correctSound').play();
-    alert('正解です！');
-    updateScore();
-}
-
-function markIncorrect(id, index) {
-    incorrectCount++;
-    document.getElementById(id).style.color = 'red';
-    document.getElementById('correct' + index).disabled = true;
-    document.getElementById('incorrect' + index).disabled = true;
-    document.getElementById('incorrectSound').play();
-    alert('不正解です！');
-    updateScore();
-}
-
-function updateScore() {
-    const totalScore = correctCount;
-    document.getElementById('score').innerText = `得点: ${totalScore}点`;
-
-    const correctPercentage = (correctCount / totalQuestions) * 100;
-    if (correctCount + incorrectCount === totalQuestions) {
-        if (correctPercentage === 100) {
-            alert('天才！(#^^#)');
-        } else if (correctPercentage > 50) {
-            alert('頑張ろうー！あともうちょっとで完璧だ～(*^-^*)');
-        } else if (correctPercentage < 49) {
-            alert('惜しい、もう一回頑張ろうー　無理せずファイトです♪');
-        }
     }
-}
 
-function shuffleQuestions() {
-    const questions = document.querySelectorAll('.question');
-    const container = document.querySelector('.content');
-    const scoreElement = document.getElementById('score');
-    const shuffled = Array.from(questions).sort(() => Math.random() - 0.5);
-    shuffled.forEach(question => container.insertBefore(question, scoreElement));
-}
+    function shuffleQuestions() {
+        const questions = document.querySelectorAll('.question');
+        const container = document.querySelector('.content');
+        const scoreElement = document.getElementById('score');
+        const shuffled = Array.from(questions).sort(() => Math.random() - 0.5);
+        shuffled.forEach(question => container.insertBefore(question, scoreElement));
+    }
 
-function clearPage() {
-    location.reload();
-}
-</script>
-
-    </div>
-    <div class="footer">© 2024 one-hat株式会社</div>
-    <audio id="correctSound" src="C:\Users\yukik\Desktop\python\correct077.mp3"></audio>
-    <audio id="incorrectSound" src="C:\Users\yukik\Desktop\python\クイズ不正解1.mp3"></audio>
-</body>
-</html>
+    function clearPage() {
+        location.reload();
+    }
+    </script>
+    
+        </div>
+        <div class="footer">© 2024 one-hat株式会社</div>
+        <audio id="correctSound" src="C:\Users\USER\Desktop\python\correct077.mp3"></audio>
+        <audio id="incorrectSound" src="C:\Users\yukik\Desktop\python\クイズ不正解1.mp3"></audio>
+    </body>
+    </html>
+    
