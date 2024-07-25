@@ -1,0 +1,247 @@
+import pandas as pd
+
+# Excelファイルのパス
+file_path = r'C:\Users\USER\Desktop\python\kirikaesi.csv'
+
+
+try:
+    # Excelファイルを読み込む
+    df = pd.read_excel(file_path)
+    
+    # HTMLのヘッダー部分
+    html_header = '''
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>クイズ</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #FFFDD0;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .header, .footer {
+                background-color: orange;
+                padding: 10px;
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                color: white;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .content {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+                box-sizing: border-box;
+            }
+            .question {
+                margin-bottom: 30px;
+            }
+            .response {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                color: green;
+                display: none;
+            }
+            .message {
+                color: blue;
+            }
+            button {
+                margin-top: 10px;
+                padding: 10px 20px;
+                border: none;
+                background-color: #d9534f;
+                color: white;
+                font-size: 16px;
+                border-radius: 100vh;
+                position: relative;
+            }
+            button:hover {
+                margin-top: 3px;
+                border-bottom: 2px solid #9f000c;
+            }
+            .btn--red {
+                border-bottom: 5px solid #9f000c;
+            }
+            .answer-buttons {
+                margin-top: 10px;
+            }
+            .answer-buttons button {
+                margin-right: 10px;
+                padding: 8px 16px;
+                font-size: 14px;
+                border-radius: 4px;
+                border: none;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .correct-button {
+                background-color: #FFC0CB;
+                color: black;
+            }
+            .incorrect-button {
+                background-color: #ADD8E6;
+                color: black;
+            }
+            .score {
+                font-size: 20px;
+                font-weight: bold;
+                margin-top: 20px;
+                color: darkblue;
+            }
+            .controls {
+                margin-bottom: 20px;
+                padding: 10px;
+                background-color: #FFFDD0;
+                text-align: center;
+            }
+            .controls button {
+                padding: 8px 16px;
+                font-size: 14px;
+                background-color: white;
+                color: black;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+                box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            }
+            .controls button:hover {
+                background-color: #f0f0f0;
+            }
+            @media (max-width: 600px) {
+                .header, .footer {
+                    font-size: 20px;
+                    padding: 8px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">one-hat株式会社 営業切り返し覚えたかわかーるツール</div>
+        <div class="controls">
+            <button onclick="shuffleQuestions()">シャッフルモード</button>
+            <button onclick="clearPage()">クリア</button>
+        </div>
+        <div class="content">
+    '''
+
+    # HTMLのフッター部分
+    html_footer = '''
+        </div>
+        <div class="footer">© 2024 one-hat株式会社</div>
+        <audio id="correctSound" src="C:\\Users\\USER\Desktop\\python\\correct077.mp3"></audio>
+        <audio id="incorrectSound" src="C:\\Users\\yukik\\Desktop\\python\\クイズ不正解1.mp3"></audio>
+    </body>
+    </html>
+    '''
+
+    # HTMLの本文部分を生成する関数
+    def generate_html_body(df):
+        html_body = ''
+        for index, row in df.iterrows():
+            # お電話口のセリフ（B列）
+            phone_script = "第{}問: お電話口のセリフ - {}".format(index + 1, row['お電話口のセリフ'])
+
+            # 切り返しのセリフ（C列）
+            response_script = "切り返しのセリフ - {}".format(row['切り返し'])
+
+            # HTMLに追加
+            html_body += f'''
+            <div class="question">
+                <p>{phone_script}</p>
+                <button class="btn--red btn--cubic" onclick="showResponse('response{index}')">答えを見る</button>
+                <div id="response{index}" class="response">
+                    <p>{response_script}</p>
+                    <div class="answer-buttons">
+                        <button class="correct-button btn--cubic" id="correct{index}" onclick="markCorrect('response{index}', {index})">正解</button>
+                        <button class="incorrect-button btn--cubic" id="incorrect{index}" onclick="markIncorrect('response{index}', {index})">不正解</button>
+                    </div>
+                </div>
+            </div>
+            '''
+        return html_body
+
+    # 最初のHTMLボディ生成
+    html_body = generate_html_body(df)
+
+    # JavaScriptでボタンをクリックすると回答を表示し、正解・不正解をカウントする関数を追加
+    html_script = '''
+    <script>
+    let correctCount = 0;
+    let incorrectCount = 0;
+    const totalQuestions = ''' + str(len(df)) + ''';
+
+    function showResponse(id) {
+        document.getElementById(id).style.display = 'block';
+    }
+
+    function markCorrect(id, index) {
+        correctCount++;
+        document.getElementById(id).style.color = 'blue';
+        document.getElementById('correct' + index).disabled = true;
+        document.getElementById('incorrect' + index).disabled = true;
+        document.getElementById('correctSound').play();
+        alert('正解です！さすがー(#^^#)');
+        updateScore();
+    }
+
+    function markIncorrect(id, index) {
+        incorrectCount++;
+        document.getElementById(id).style.color = 'red';
+        document.getElementById('correct' + index).disabled = true;
+        document.getElementById('incorrect' + index).disabled = true;
+        document.getElementById('incorrectSound').play();
+        alert('不正解です！');
+        updateScore();
+    }
+
+    function updateScore() {
+        const totalScore = correctCount;
+        document.getElementById('score').innerText = `得点: ${totalScore}点`;
+
+        const correctPercentage = (correctCount / totalQuestions) * 100;
+        if (correctCount + incorrectCount === totalQuestions) {
+            if (correctPercentage === 100) {
+                alert('天才！(#^^#)');
+            } else if (correctPercentage > 50) {
+                alert('頑張ろうー！あともうちょっとで完璧だ～(*^-^*)');
+            } else if (correctPercentage < 49) {
+                alert('惜しい、もう一回頑張ろうー　無理せずファイトです♪');
+            }
+        }
+    }
+
+    function shuffleQuestions() {
+        const questions = document.querySelectorAll('.question');
+        const container = document.querySelector('.content');
+        const scoreElement = document.getElementById('score');
+        const shuffled = Array.from(questions).sort(() => Math.random() - 0.5);
+        shuffled.forEach(question => container.insertBefore(question, scoreElement));
+    }
+
+    function clearPage() {
+        location.reload();
+    }
+    </script>
+    '''
+
+    # 完全なHTML
+    html_content = html_header + html_body + '<div id="score" class="score">得点: 0点</div>' + html_script + html_footer
+
+    # HTMLファイルを書き込む
+    with open('quiz.html', 'w', encoding='utf-8') as file:
+        file.write(html_content)
+
+    print("HTMLファイルに出力しました。")
+
+except FileNotFoundError as e:
+    print(f"エラー: ファイルが見つかりません - {e.filename}")
+except Exception as e:
+    print(f"エラーが発生しました: {e}")
